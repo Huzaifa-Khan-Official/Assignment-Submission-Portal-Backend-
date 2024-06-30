@@ -42,43 +42,6 @@ const createStudent = asyncHandler(async (req, res) => {
     }
 });
 
-const createUser = asyncHandler(async (req, res) => {
-    const { username, email, password, role, teacher_id } = req.body;
-
-    if (!username || !email || !password) {
-        throw new Error("Please enter all fields");
-    }
-
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-        res.status(400).send("User already exists");
-        return;
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    let newUser;
-
-    if (role === "student") {
-        newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
-    } else {
-        newUser = new User({ username, email, password: hashedPassword, role });
-    }
-
-    try {
-        await newUser.save();
-        generateToken(res, newUser._id);
-
-        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, role: newUser.role });
-    } catch (error) {
-        res.status(400);
-        throw new Error("Invalid user data");
-    }
-});
-
-
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -113,9 +76,9 @@ const logoutUser = asyncHandler(async (req, res) => {
     res.status(200).send("User logged out successfully");
 })
 
-const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await User.find({});
-    res.status(200).json(users);
+const getAllTrainers = asyncHandler(async (req, res) => {
+    const trainers = await User.find({ role: "trainer" });
+    res.status(200).json(trainers);
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
@@ -145,7 +108,6 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
             _id: updatedUser._id,
             username: updatedUser.username,
             email: updatedUser.email,
-            isAdmin: updatedUser.isAdmin,
         })
     } else {
         res.status(404);
@@ -153,29 +115,59 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-const deleteUserById = asyncHandler(async (req, res) => {
-    const user = await User.findByIdAndDelete(req.params.id);
+const deleteTrainerById = asyncHandler(async (req, res) => {
+    const trainer = await User.findByIdAndDelete(req.params.trainerId);
 
-    if (user) {
-        if (user.isAdmin) {
+    if (trainer) {
+        if (trainer.role == "admin") {
             res.status(400);
-            throw new Error("Cannot delete an admin user");
+            throw new Error("Cannot delete an admin!");
+        } else {
+            await User.deleteOne({ _id: trainer._id })
+
+            res.json({ message: "Trainer deleted successfully" });
         }
+    } else {
+        res.status(404);
+        throw new Error("Trainer not found");
+    }
+})
 
-        await User.deleteOne({ _id: user._id })
+const deleteStudentById = asyncHandler(async (req, res) => {
+    const student = await User.findByIdAndDelete(req.params.studentId);
 
-        res.json({ message: "User deleted successfully" });
+    if (student) {
+        if (student.role == "admin") {
+            res.status(400);
+            throw new Error("Cannot delete an admin!");
+        } else {
+            await User.deleteOne({ _id: student._id })
+
+            res.json({ message: "Student deleted successfully" });
+        }
+    } else {
+        res.status(404);
+        throw new Error("Student not found");
+    }
+})
+
+
+const getTrainerById = asyncHandler(async (req, res) => {
+    const trainer = await User.findById(req.params.trainerId).select("-password");
+
+    if (trainer) {
+        res.json(trainer);
     } else {
         res.status(404);
         throw new Error("User not found");
     }
 })
 
-const getUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select("-password");
+const getStudentById = asyncHandler(async (req, res) => {
+    const student = await User.findById(req.params.studentId).select("-password");
 
-    if (user) {
-        res.json(user);
+    if (student) {
+        res.json(student);
     } else {
         res.status(404);
         throw new Error("User not found");
@@ -183,12 +175,12 @@ const getUserById = asyncHandler(async (req, res) => {
 })
 
 const updateUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.Id);
 
     if (user) {
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
-        user.isAdmin = Boolean(req.body.isAdmin || user.isAdmin);
+        user.role = req.body.role || user.role;
 
         const updatedUser = await user.save();
 
@@ -229,4 +221,4 @@ const createTeacher = asyncHandler(async (req, res) => {
     }
 })
 
-export { createUser, loginUser, logoutUser, getAllUsers, getCurrentUserProfile, updateCurrentUserProfile, deleteUserById, getUserById, updateUserById, createTeacher, createStudent };
+export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateUserById };

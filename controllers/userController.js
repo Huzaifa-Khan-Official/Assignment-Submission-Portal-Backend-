@@ -4,8 +4,10 @@ import User from "../models/userModel.js";
 import asyncHandler from "../middlewares/asynHandler.js";
 import generateToken from "../utils/createToken.js";
 
-const createUser = asyncHandler(async (req, res) => {
-    const { username, email, password } = req.body;
+
+// student CRUD
+const createStudent = asyncHandler(async (req, res) => {
+    const { username, email, password, role, teacher_id } = req.body;
 
     if (!username || !email || !password) {
         throw new Error("Please enter all fields");
@@ -13,22 +15,69 @@ const createUser = asyncHandler(async (req, res) => {
 
     const userExists = await User.findOne({ email });
 
-    if (userExists) res.status(400).send("User already exists");
+    if (userExists) {
+        res.status(400).send("User already exists");
+        return;
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ username, email, password: hashedPassword });
+    let newUser;
+
+    if (role === "student") {
+        newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
+    } else {
+        newUser = new User({ username, email, password: hashedPassword, role });
+    }
+
     try {
         await newUser.save();
         generateToken(res, newUser._id);
 
-        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, isAdmin: newUser.isAdmin });
+        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, role: newUser.role });
     } catch (error) {
-        res.status(400)
-        throw new Error("Invalid user data")
+        res.status(400);
+        throw new Error("Invalid user data");
     }
 });
+
+const createUser = asyncHandler(async (req, res) => {
+    const { username, email, password, role, teacher_id } = req.body;
+
+    if (!username || !email || !password) {
+        throw new Error("Please enter all fields");
+    }
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+        res.status(400).send("User already exists");
+        return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    let newUser;
+
+    if (role === "student") {
+        newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
+    } else {
+        newUser = new User({ username, email, password: hashedPassword, role });
+    }
+
+    try {
+        await newUser.save();
+        generateToken(res, newUser._id);
+
+        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, role: newUser.role });
+    } catch (error) {
+        res.status(400);
+        throw new Error("Invalid user data");
+    }
+});
+
 
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -139,7 +188,7 @@ const updateUserById = asyncHandler(async (req, res) => {
     if (user) {
         user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
-        user.isAdmin = Boolean(req.body.isAdmin);
+        user.isAdmin = Boolean(req.body.isAdmin || user.isAdmin);
 
         const updatedUser = await user.save();
 
@@ -155,4 +204,29 @@ const updateUserById = asyncHandler(async (req, res) => {
     }
 })
 
-export { createUser, loginUser, logoutUser, getAllUsers, getCurrentUserProfile, updateCurrentUserProfile, deleteUserById, getUserById, updateUserById };
+const createTeacher = asyncHandler(async (req, res) => {
+    const { username, email, password, role } = req.body;
+
+    if (!username || !email || !password || !role) {
+        throw new Error("Please enter all fields");
+    }
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) res.status(400).send("User already exists");
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({ username, email, password: hashedPassword, role });
+    try {
+        await newUser.save();
+
+        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, isAdmin: newUser.isAdmin, role: newUser.role });
+    } catch (error) {
+        res.status(400)
+        throw new Error("Invalid user data")
+    }
+})
+
+export { createUser, loginUser, logoutUser, getAllUsers, getCurrentUserProfile, updateCurrentUserProfile, deleteUserById, getUserById, updateUserById, createTeacher, createStudent };

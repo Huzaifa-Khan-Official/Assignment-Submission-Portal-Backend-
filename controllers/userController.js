@@ -25,6 +25,7 @@ const createStudent = asyncHandler(async (req, res) => {
 
     let newUser;
 
+    console.log();
     if (role === "student") {
         newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
     } else {

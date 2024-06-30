@@ -3,10 +3,10 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 
 // utiles
-import connectDB from "./config/dbConfig.js";
-import serverConfig from "./config/serverConfig.js";
-import userRoutes from "./routes/userRoutes.js"
-import assignmentRoutes from "./routes/assignmentRoutes.js"
+import connectDB from "../config/dbConfig.js";
+import serverConfig from "../config/serverConfig.js";
+import userRoutes from "../routes/userRoutes.js"
+import assignmentRoutes from "../routes/assignmentRoutes.js"
 
 
 const port = serverConfig.PORT || 5000;

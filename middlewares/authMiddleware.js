@@ -34,4 +34,12 @@ const authorizeAdmin = (req, res, next) => {
     }
 }
 
-export { authenticate, authorizeAdmin };
+const authorizeTrainer = (req, res, next) => {
+    if (req.user && req.user.role == "trainer") {
+        next();
+    } else {
+        res.status(401).send("Not authorized as trainer");
+    }
+}
+
+export { authenticate, authorizeAdmin, authorizeTrainer };

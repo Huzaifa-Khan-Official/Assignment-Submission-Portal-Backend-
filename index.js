@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/dbConfig.js";
 import serverConfig from "./config/serverConfig.js";
 import userRoutes from "./routes/userRoutes.js"
+import assignmentRoutes from "./routes/assignmentRoutes.js"
 
 
 const port = serverConfig.PORT || 5000;
@@ -24,9 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-})
+app.use("/api/assignments", assignmentRoutes);
 
 app.listen(port, () => console.log(`Server listening on ${port}`));
 

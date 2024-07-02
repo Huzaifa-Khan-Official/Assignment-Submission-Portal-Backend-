@@ -28,9 +28,20 @@ const createAssignment = asyncHandler(async (req, res) => {
 
 const getAssignment = asyncHandler(async (req, res) => {
     const assignment = await Assignment.findById(req.params.assignmentId);
-
+    const trainerId = req.user._id.toString();
+    const assignmentTrainer = assignment.trainer.toString();
     if (assignment) {
-        res.json(assignment);
+        console.log("user ==>", req.user);
+        console.log(trainerId == assignmentTrainer);
+        console.log(assignment);
+        if (trainerId == assignmentTrainer) {
+
+            res.json(assignment);
+
+        } else {
+            res.status(403);
+            throw new Error("You are not authorized to view this assignment");
+        }
     } else {
         res.status(404);
         throw new Error("Assignment not found");
@@ -72,5 +83,14 @@ const getAllAssignments = asyncHandler(async (req, res) => {
     res.json(assignments);
 })
 
+const getAssignments = asyncHandler(async (req, res) => {
+    const assignments = await Assignment.find({trainer: req.user._id});
+    if (assignments) {
+        res.json(assignments);
+    } else {
+        res.status(404);
+        throw new Error("Assignments not found");
+    }
+})
 
-export { createAssignment, updateAssignment, getAllAssignments, deleteAssignment, getAssignment };
+export { createAssignment, updateAssignment, getAllAssignments, deleteAssignment, getAssignment, getAssignments };

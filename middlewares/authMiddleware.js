@@ -35,7 +35,7 @@ const authorizeAdmin = (req, res, next) => {
 }
 
 const authorizeTrainer = (req, res, next) => {
-    if (req.user && (req.user.role == "trainer" || req.user.role == "admin")) {
+    if (req.user && req.user.role == "trainer") {
         next();
     } else {
         res.status(401).send("Not authorized!");

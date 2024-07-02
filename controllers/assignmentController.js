@@ -26,6 +26,17 @@ const createAssignment = asyncHandler(async (req, res) => {
     }
 })
 
+const getAssignment = asyncHandler(async (req, res) => {
+    const assignment = await Assignment.findById(req.params.assignmentId);
+
+    if (assignment) {
+        res.json(assignment);
+    } else {
+        res.status(404);
+        throw new Error("Assignment not found");
+    }
+})
+
 const updateAssignment = asyncHandler(async (req, res) => {
     const assignment = await Assignment.findById(req.params.assignmentId);
 
@@ -43,4 +54,23 @@ const updateAssignment = asyncHandler(async (req, res) => {
         throw new Error("Assignment not found");
     }
 })
-export { createAssignment, updateAssignment };
+
+const deleteAssignment = asyncHandler(async (req, res) => {
+    const assignment = await Assignment.findByIdAndDelete(req.params.assignmentId);
+
+    if (assignment) {
+        res.json({ message: "Assignment deleted successfully" });
+    } else {
+        res.status(404);
+        throw new Error("Assignment not found");
+    }
+})
+
+const getAllAssignments = asyncHandler(async (req, res) => {
+    console.log("me aaya");
+    const assignments = await Assignment.find();
+    res.json(assignments);
+})
+
+
+export { createAssignment, updateAssignment, getAllAssignments, deleteAssignment, getAssignment };

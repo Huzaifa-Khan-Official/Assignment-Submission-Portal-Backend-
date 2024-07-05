@@ -2,7 +2,26 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
-// Assignment schema
+const submissionSchema = new Schema({
+    student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    submittedAt: {
+        type: Date,
+        default: null
+    },
+    grade: {
+        type: Number,
+        default: null
+    },
+    fileLink: {
+        type: String,
+        required: false
+    }
+}, { timestamps: true });
+
 const assignmentSchema = new Schema({
     title: {
         type: String,
@@ -15,6 +34,11 @@ const assignmentSchema = new Schema({
     trainer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        required: true
+    },
+    class: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class',
         required: true
     },
     assignDate: {
@@ -32,7 +56,8 @@ const assignmentSchema = new Schema({
     fileLink: {
         type: String,
         required: false
-    }
+    },
+    submissions: [submissionSchema]
 }, { timestamps: true });
 
 const Assignment = model('Assignment', assignmentSchema);

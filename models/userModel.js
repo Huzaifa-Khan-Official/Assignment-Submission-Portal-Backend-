@@ -24,12 +24,17 @@ const userSchema = new Schema({
     teacher_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: function() { return this.role === 'student'; },
+        required: function () { return this.role === 'student'; },
+        default: null
+    },
+    class_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class',
         default: null
     }
 }, { timestamps: true });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
     if (this.role === 'student' && !this.teacher_id) {
         next(new Error('teacher_id is required for students'));
     } else {

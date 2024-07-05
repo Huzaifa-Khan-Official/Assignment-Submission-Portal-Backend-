@@ -2,26 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
-const submissionSchema = new Schema({
-    student: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    submittedAt: {
-        type: Date,
-        default: null
-    },
-    grade: {
-        type: Number,
-        default: null
-    },
-    fileLink: {
-        type: String,
-        required: false
-    }
-}, { timestamps: true });
-
+// Assignment schema
 const assignmentSchema = new Schema({
     title: {
         type: String,
@@ -36,9 +17,9 @@ const assignmentSchema = new Schema({
         ref: 'User',
         required: true
     },
-    class: {
+    course: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Course',
         required: true
     },
     assignDate: {
@@ -57,7 +38,15 @@ const assignmentSchema = new Schema({
         type: String,
         required: false
     },
-    submissions: [submissionSchema]
+    submissions: [{
+        student: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        fileLink: String,
+        submittedAt: Date,
+        grade: Number
+    }]
 }, { timestamps: true });
 
 const Assignment = model('Assignment', assignmentSchema);

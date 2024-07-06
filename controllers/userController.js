@@ -43,6 +43,41 @@ const createStudent = asyncHandler(async (req, res) => {
     }
 });
 
+const createStudentByAdmin = asyncHandler(async (req, res) => {
+    const { username, email, password, role, teacher_id } = req.body;
+
+    if (!username || !email || !password) {
+        throw new Error("Please enter all fields");
+    }
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+        res.status(400).send("User already exists");
+        return;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    let newUser;
+
+    if (role === "student") {
+        newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
+    } else {
+        newUser = new User({ username, email, password: hashedPassword, role });
+    }
+
+    try {
+        await newUser.save();
+
+        res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, role: newUser.role });
+    } catch (error) {
+        res.status(400);
+        throw new Error("Invalid user data");
+    }
+});
+
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -79,6 +114,11 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const getAllTrainers = asyncHandler(async (req, res) => {
     const trainers = await User.find({ role: "trainer" });
+    res.status(200).json(trainers);
+});
+
+const getAllStudents = asyncHandler(async (req, res) => {
+    const trainers = await User.find({ role: "student" });
     res.status(200).json(trainers);
 });
 
@@ -167,7 +207,7 @@ const getTrainerById = asyncHandler(async (req, res) => {
 const getStudentById = asyncHandler(async (req, res) => {
     const student = await User.findById(req.params.studentId).select("-password");
 
-    if (student) {
+    if (student && student.role ==  "student") {
         res.json(student);
     } else {
         res.status(404);
@@ -175,8 +215,30 @@ const getStudentById = asyncHandler(async (req, res) => {
     }
 })
 
-const updateUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.Id);
+const updateStudentById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.studentId);
+
+    if (user) {
+        user.username = req.body.username || user.username;
+        user.email = req.body.email || user.email;
+        user.role = req.body.role || user.role;
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+        })
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+})
+
+const updateTrainerById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.trainerId);
 
     if (user) {
         user.username = req.body.username || user.username;
@@ -222,4 +284,22 @@ const createTeacher = asyncHandler(async (req, res) => {
     }
 })
 
-export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateUserById };
+const getStudentsOfTrainer = asyncHandler(async (req, res) => {
+    const trainerId = req.params.trainerId;
+
+    if (!trainerId) {
+        res.status(400).send("Trainer Not Found!");
+        return;
+    }
+
+    const students = await User.find({ teacher_id: trainerId, role: "student" });
+
+    if (students) {
+        res.status(200).json(students);
+    } else {
+        res.status(404);
+        throw new Error("Students not found for this trainer");
+    }
+});
+
+export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer };

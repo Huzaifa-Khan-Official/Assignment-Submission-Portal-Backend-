@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateUserById } from "../controllers/userController.js";
+import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer } from "../controllers/userController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js"
 
 const router = express.Router();
@@ -19,19 +19,28 @@ router.route("/profile")
 router.route("/trainers")
     .get(authenticate, authorizeAdmin, getAllTrainers);
 
-router.route("/newTrainer")
+router.route("/students")
+    .get(authenticate, authorizeAdmin, getAllStudents);
+
+router.route("/trainer")
     .post(authenticate, authorizeAdmin, createTeacher);
 
 router.route("/trainer/:trainerId")
     .get(authenticate, authorizeAdmin, getTrainerById)
-    .delete(authenticate, authorizeAdmin, deleteTrainerById);
+    .delete(authenticate, authorizeAdmin, deleteTrainerById)
+    .put(authenticate, authorizeAdmin, updateTrainerById);
+
+
+router.route("/student")
+    .post(authenticate, authorizeAdmin, createStudentByAdmin);
 
 router.route("/student/:studentId")
     .get(authenticate, authorizeAdmin, getStudentById)
-    .delete(authenticate, authorizeAdmin, deleteStudentById);
+    .delete(authenticate, authorizeAdmin, deleteStudentById)
+    .put(authenticate, authorizeAdmin, updateStudentById);
 
-router.route("/:Id")
-    .put(authenticate, authorizeAdmin, updateUserById)
+router.route("/students/:trainerId")
+    .get(authenticate, authorizeAdmin, getStudentsOfTrainer);
 
 router.post("/auth", loginUser);
 

@@ -69,13 +69,13 @@ const userSchema = new Schema({
         enum: ["student", "trainer", "admin"],
         default: "student"
     },
-    teacher_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: function () { return this.role === 'student'; },
-        default: null
-    },
-    class_ids: [{
+    // teacher_id: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     required: function () { return this.role === 'student'; },
+    //     default: null
+    // },
+    classes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'
     }],

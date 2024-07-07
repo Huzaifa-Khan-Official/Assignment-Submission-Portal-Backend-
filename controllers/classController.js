@@ -114,4 +114,41 @@ const deleteClassById = asyncHandler(async (req, res) => {
     }
 })
 
-export { createClass, updateClassById, getClassById, deleteClassById }
+const enrollStudent = asyncHandler(async (req, res) => {
+    const { join_code } = req.body;
+
+    if (!join_code) {
+        return res.status(400).json({ error: "Please enter a join code for the class" });
+    }
+
+    try {
+        const classObj = await Class.findOne({ join_code });
+        const student = await User.findById(req.user._id);
+
+        if (!classObj) {
+            return res.status(404).send('Invalid Class Code');
+        }
+
+        // Check if the student is already in the class
+        if (classObj.students.includes(student._id)) {
+            return res.status(400).send('Student is already in the class');
+        }
+
+        // Add the student to the class
+        classObj.students.push(student._id);
+        await classObj.save();
+
+        // Add the class to the student's class_ids array
+        if (!student.class_ids.includes(classObj._id)) {
+            student.class_ids.push(classObj._id);
+            await student.save();
+        }
+
+        res.send('Student assigned to class successfully');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
+export { createClass, updateClassById, getClassById, deleteClassById, enrollStudent }

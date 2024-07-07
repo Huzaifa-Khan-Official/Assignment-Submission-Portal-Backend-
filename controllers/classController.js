@@ -139,8 +139,8 @@ const enrollStudent = asyncHandler(async (req, res) => {
         await classObj.save();
 
         // Add the class to the student's class_ids array
-        if (!student.class_ids.includes(classObj._id)) {
-            student.class_ids.push(classObj._id);
+        if (!student.classes.includes(classObj._id)) {
+            student.classes.push(classObj._id);
             await student.save();
         }
 
@@ -150,5 +150,94 @@ const enrollStudent = asyncHandler(async (req, res) => {
     }
 });
 
+const getAllClassesOfTrainer = asyncHandler(async (req, res) => {
+    const teacherId = req.user._id;
 
-export { createClass, updateClassById, getClassById, deleteClassById, enrollStudent }
+    try {
+        const teacher = await User.findById(teacherId);
+
+        if (!teacher) {
+            return res.status(404).json({ error: "Teacher not found" });
+        }
+
+        const classes = await Class.find({ teacher: teacherId });
+
+        res.status(200).json(classes);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+const getAllStudentsOfClass = asyncHandler(async (req, res) => {
+    const classId = req.params.classId;
+
+    try {
+        const classObj = await Class.findById(classId);
+
+        if (!classObj) {
+            return res.status(404).json({ error: "Class not found" });
+        }
+
+        const students = await User.find({ _id: { $in: classObj.students } });
+
+        res.status(200).json(students);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+const getClassmates = asyncHandler(async (req, res) => {
+    const classId = req.params.classId;
+    const studentId = req.user._id;
+
+    try {
+        const classObj = await Class.findById(classId);
+
+        if (!classObj) {
+            return res.status(404).json({ error: "Class not found" });
+        }
+
+        const student = await User.findById(studentId);
+
+        if (!student || !classObj.students.includes(studentId)) {
+            return res.status(404).json({ error: "Student not found in the class" });
+        }
+
+        const classmates = await User.find({ _id: { $in: classObj.students }, _id: { $ne: studentId }, role: "student" });
+
+
+        res.status(200).json(classmates);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Server error" });
+    }
+});
+
+
+const getClassesOfStudent = asyncHandler(async (req, res) => {
+    const studentId = req.user._id;
+
+    try {
+        const student = await User.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+
+        const classes = await Class.find({ students: studentId });
+
+        res.status(200).json(classes);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Server error" });
+    }
+})
+
+
+export { createClass, updateClassById, getClassById, deleteClassById, enrollStudent, getAllClassesOfTrainer, getAllStudentsOfClass, getClassmates, getClassesOfStudent }

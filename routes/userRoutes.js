@@ -1,6 +1,6 @@
 import express from "express";
-import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer } from "../controllers/userController.js";
-import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js"
+import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer } from "../controllers/userController.js";
+import { authenticate, authorizeAdmin, authorizeTrainer } from "../middlewares/authMiddleware.js"
 
 const router = express.Router();
 
@@ -41,6 +41,9 @@ router.route("/student/:studentId")
 
 router.route("/students/:trainerId")
     .get(authenticate, authorizeAdmin, getStudentsOfTrainer);
+
+router.route("/trainer/student/:studentId")
+    .get(authenticate, authorizeTrainer, getStudentByTrainer);
 
 router.post("/auth", loginUser);
 

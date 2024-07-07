@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
+import Class from "../models/classModel.js";
 import asyncHandler from "../middlewares/asynHandler.js";
 import generateToken from "../utils/createToken.js";
 
@@ -44,7 +45,7 @@ const createStudent = asyncHandler(async (req, res) => {
 });
 
 const createStudentByAdmin = asyncHandler(async (req, res) => {
-    const { username, email, password, role, teacher_id } = req.body;
+    const { username, email, password, role } = req.body;
 
     if (!username || !email || !password) {
         throw new Error("Please enter all fields");
@@ -60,20 +61,15 @@ const createStudentByAdmin = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    let newUser;
-
-    if (role === "student") {
-        newUser = new User({ username, email, password: hashedPassword, role, teacher_id });
-    } else {
-        newUser = new User({ username, email, password: hashedPassword, role });
-    }
 
     try {
+        const newUser = new User({ username, email, password: hashedPassword, role });
         await newUser.save();
 
         res.status(200).json({ _id: newUser._id, username: newUser.username, email: newUser.email, role: newUser.role });
     } catch (error) {
         res.status(400);
+        console.log("error ==>", error);
         throw new Error("Invalid user data");
     }
 });
@@ -207,7 +203,7 @@ const getTrainerById = asyncHandler(async (req, res) => {
 const getStudentById = asyncHandler(async (req, res) => {
     const student = await User.findById(req.params.studentId).select("-password");
 
-    if (student && student.role ==  "student") {
+    if (student && student.role == "student") {
         res.json(student);
     } else {
         res.status(404);
@@ -302,4 +298,33 @@ const getStudentsOfTrainer = asyncHandler(async (req, res) => {
     }
 });
 
-export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer };
+const getStudentByTrainer = asyncHandler(async (req, res) => {
+    const studentId = req.params.studentId;
+
+    if (!studentId) {
+        res.status(400).send("Student Not Found!");
+        return;
+    }
+    try {
+        const student = await User.findById(studentId);
+
+        if (!student) {
+            res.status(404);
+            throw new Error("Trainer or Student not found");
+        }
+
+
+        res.status(200).json({
+            _id: student._id,
+            username: student.username,
+            email: student.email,
+            role: student.role,
+        });
+    } catch (error) {
+        console.log("error ==>", error);
+        res.status(500).send("Server Error");
+    }
+
+});
+
+export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer };

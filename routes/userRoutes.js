@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer } from "../controllers/userController.js";
+import { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer, getStudentsByClass } from "../controllers/userController.js";
 import { authenticate, authorizeAdmin, authorizeTrainer } from "../middlewares/authMiddleware.js"
 
 const router = express.Router();
@@ -33,6 +33,9 @@ router.route("/trainer/:trainerId")
 
 router.route("/student")
     .post(authenticate, authorizeAdmin, createStudentByAdmin);
+
+router.route("/students/class/:classId")
+    .get(authenticate, authorizeAdmin, getStudentsByClass);
 
 router.route("/student/:studentId")
     .get(authenticate, authorizeAdmin, getStudentById)

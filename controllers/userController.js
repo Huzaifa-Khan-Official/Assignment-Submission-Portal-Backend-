@@ -327,4 +327,28 @@ const getStudentByTrainer = asyncHandler(async (req, res) => {
 
 });
 
-export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer };
+const getStudentsByClass = asyncHandler(async (req, res) => {
+    const classId = req.params.classId;
+
+    if (!classId) {
+        res.status(400).send("Class Not Found!");
+        return;
+    }
+
+    try {
+        const students = await User.find({ class_id: classId, role: "student" });
+        console.log("students ==>", students);
+
+        if (students) {
+            res.status(200).json(students);
+        } else {
+            res.status(404);
+            throw new Error("Students not found for this class");
+        }
+    } catch (error) {
+        console.log("error ==>", error);
+        res.status(500).send("Server Error");
+    }
+});
+
+export { loginUser, logoutUser, getCurrentUserProfile, updateCurrentUserProfile, createTeacher, createStudent, getAllTrainers, getTrainerById, getStudentById, deleteTrainerById, deleteStudentById, updateTrainerById, getAllStudents, createStudentByAdmin, updateStudentById, getStudentsOfTrainer, getStudentByTrainer, getStudentsByClass };

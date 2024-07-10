@@ -51,8 +51,7 @@ const createAssignment = asyncHandler(async (req, res) => {
     const assignment = await newAssignment.save();
     res.status(200).json(assignment);
   } catch (error) {
-    res.status(400);
-    throw new Error("Something went wrong");
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
@@ -625,5 +624,5 @@ export {
   getAssignmentsForClass,
   getAssignmentsToSubmit,
   submitAssignment,
-  getAllSubmittedAssignments,
+  // getAllSubmittedAssignments,
 };

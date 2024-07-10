@@ -16,7 +16,7 @@ import {
   getAssignmentsForClass,
   getAssignmentsToSubmit,
   submitAssignment,
-  getAllSubmittedAssignments,
+  // getAllSubmittedAssignments,
 } from "../controllers/assignmentController.js";
 import {
   authenticate,
@@ -64,9 +64,9 @@ router.get(
 );
 
 // student routes
-router.get("/student/submitted", authenticate, getAllSubmittedAssignments);
-router.get("/student/submitted", authenticate, getSubmittedAssignments);
-router.get("/student/class/:classId", authenticate, getAssignmentsForClass);
-router.get("/student/pending", authenticate, getAssignmentsToSubmit);
-router.post("/:assignmentId/submit", authenticate, submitAssignment);
+// router.get("/student/allSubmitted", getAllSubmittedAssignments);
+router.get("/student/submitted", getSubmittedAssignments); // current class Student is in
+router.get("/student/class/:classId", getAssignmentsForClass);
+router.get("/student/pending", getAssignmentsToSubmit);
+router.post("/:assignmentId/submit", submitAssignment);
 export default router;

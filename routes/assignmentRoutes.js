@@ -54,12 +54,12 @@ router.get(
 );
 router.get(
   "/class/:classId/student/:studentId/reports",
-  authenticate,
+  authorizeAdmin,
   getStudentAssignmentReportsForClass
 );
 router.get(
   "/class/:classId/assignment/:assignmentId/student/:studentId",
-  authenticate,
+  authorizeAdmin,
   getStudentAssignmentInClass
 );
 

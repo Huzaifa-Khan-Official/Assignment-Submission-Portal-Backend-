@@ -1,23 +1,72 @@
 import express from "express";
-import { authenticate, authorizeAdmin, authorizeTrainer } from "../middlewares/authMiddleware.js";
-import { createAssignment, updateAssignment, getAllAssignments, deleteAssignment, getAssignment, getAssignments } from "../controllers/assignmentController.js";
+import {
+  createAssignment,
+  updateAssignment,
+  deleteAssignment,
+  getAssignmentsByTrainer,
+  getAssignmentById,
+  evaluateSubmission,
+  getAssignmentSubmissions,
+  getAssignmentsByTrainerForClass,
+  getStudentSubmissionReport,
+  getAssignmentsByTrainerId,
+  getStudentAssignmentReportsForClass,
+  getStudentAssignmentInClass,
+  getSubmittedAssignments,
+  getAssignmentsForClass,
+  getAssignmentsToSubmit,
+  submitAssignment,
+  getAllSubmittedAssignments,
+} from "../controllers/assignmentController.js";
+import {
+  authenticate,
+  authorizeTrainer,
+  authorizeAdmin,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
+// Apply authentication to all routes
+router.use(authenticate);
 
-// Get all the assignments as admin
-router.route("/getAssignments")
-    .get(authenticate, authorizeAdmin, getAllAssignments);
+// Trainer routes
+router.post("/create", authorizeTrainer, createAssignment);
+router.put("/:id", authorizeTrainer, updateAssignment);
+router.delete("/:id", authorizeTrainer, deleteAssignment);
+router.get("/trainer", authorizeTrainer, getAssignmentsByTrainer);
+router.get("/:id", authorizeTrainer, getAssignmentById);
+router.post("/:assignmentId/evaluate", authorizeTrainer, evaluateSubmission);
+router.get("/:id/submissions", authorizeTrainer, getAssignmentSubmissions);
+router.get(
+  "/class/:classId",
+  authorizeTrainer,
+  getAssignmentsByTrainerForClass
+);
 
-router.route("/assignments")
-    .get(authenticate, authorizeTrainer, getAssignments);
+// Route accessible by students, trainers, and admins
+router.get("/:assignmentId/report/:studentId", getStudentSubmissionReport);
 
-router.route("/create")
-    .post(authenticate, authorizeTrainer, createAssignment);
+// ADMIN ROUTES
+router.get(
+  "/trainer/:trainerId/assignments",
+  authorizeAdmin,
+  getAssignmentsByTrainerId
+);
+router.get(
+  "/class/:classId/student/:studentId/reports",
+  authenticate,
+  getStudentAssignmentReportsForClass
+);
+router.get(
+  "/class/:classId/assignment/:assignmentId/student/:studentId",
+  authenticate,
+  getStudentAssignmentInClass
+);
 
-router.route("/:assignmentId")
-    .get(authenticate, authorizeTrainer, getAssignment)
-    .put(authenticate, authorizeTrainer, updateAssignment)
-    .delete(authenticate, authorizeTrainer, deleteAssignment);
-
+// student routes
+router.get("/student/submitted", authenticate, getAllSubmittedAssignments);
+router.get("/student/submitted", authenticate, getSubmittedAssignments);
+router.get("/student/class/:classId", authenticate, getAssignmentsForClass);
+router.get("/student/pending", authenticate, getAssignmentsToSubmit);
+router.post("/:assignmentId/submit", authenticate, submitAssignment);
 export default router;

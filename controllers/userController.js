@@ -42,14 +42,12 @@ const createStudent = asyncHandler(async (req, res) => {
     await newUser.save();
     generateToken(res, newUser._id);
 
-    res
-      .status(200)
-      .json({
-        _id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
-      });
+    res.status(200).json({
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role,
+    });
   } catch (error) {
     res.status(400);
     throw new Error("Invalid user data");
@@ -82,14 +80,12 @@ const createStudentByAdmin = asyncHandler(async (req, res) => {
     });
     await newUser.save();
 
-    res
-      .status(200)
-      .json({
-        _id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        role: newUser.role,
-      });
+    res.status(200).json({
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role,
+    });
   } catch (error) {
     res.status(400);
     console.log("error ==>", error);
@@ -117,7 +113,7 @@ const loginUser = asyncHandler(async (req, res) => {
           _id: userExits._id,
           username: userExits.username,
           email: userExits.email,
-          isAdmin: userExits.isAdmin,
+          role: userExits.role,
         });
 
       return;
@@ -154,7 +150,12 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     res
       .status(200)
-      .json({ _id: user._id, username: user.username, email: user.email });
+      .json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      });
   } else {
     res.status(404);
     throw new Error("User not found");
@@ -304,15 +305,13 @@ const createTeacher = asyncHandler(async (req, res) => {
   try {
     await newUser.save();
 
-    res
-      .status(200)
-      .json({
-        _id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        isAdmin: newUser.isAdmin,
-        role: newUser.role,
-      });
+    res.status(200).json({
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      isAdmin: newUser.isAdmin,
+      role: newUser.role,
+    });
   } catch (error) {
     res.status(400);
     throw new Error("Invalid user data");

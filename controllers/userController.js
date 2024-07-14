@@ -107,14 +107,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
     if (isMatch) {
       generateToken(res, userExits._id);
-      res
-        .status(200)
-        .json({
-          _id: userExits._id,
-          username: userExits.username,
-          email: userExits.email,
-          role: userExits.role,
-        });
+      res.status(200).json({
+        _id: userExits._id,
+        username: userExits.username,
+        email: userExits.email,
+        role: userExits.role,
+      });
 
       return;
     } else {
@@ -145,17 +143,16 @@ const getAllStudents = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
+  if (!req.user) res.status(400).send("User not found");
   const user = await User.findById(req.user._id);
 
   if (user) {
-    res
-      .status(200)
-      .json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      });
+    res.status(200).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
   } else {
     res.status(404);
     throw new Error("User not found");

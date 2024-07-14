@@ -57,6 +57,7 @@ connectDB()
 const allowedOrigins = [
   "http://localhost:5173",
   "https://hackathon-frontend-sandy.vercel.app",
+  "https://assignment-submission-portal-frontend.vercel.app",
 ];
 
 // CORS configuration

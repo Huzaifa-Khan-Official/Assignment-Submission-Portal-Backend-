@@ -143,7 +143,11 @@ const getAllStudents = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
-  if (!req.user) return res.status(400).send("User not found");
+  // if (!req.user) return res.status(400).send("User not found");
+  if (!req.user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
 
   const user = await User.findById(req.user._id);
 

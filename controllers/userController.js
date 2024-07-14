@@ -106,12 +106,13 @@ const loginUser = asyncHandler(async (req, res) => {
     const isMatch = await bcrypt.compare(password, userExits.password);
 
     if (isMatch) {
-      generateToken(res, userExits._id);
+      const token = generateToken(res, userExits._id);
       res.status(200).json({
         _id: userExits._id,
         username: userExits.username,
         email: userExits.email,
         role: userExits.role,
+        token: token,
       });
 
       return;

@@ -40,13 +40,14 @@ const createStudent = asyncHandler(async (req, res) => {
 
   try {
     await newUser.save();
-    generateToken(res, newUser._id);
+    const token = generateToken(res, newUser._id);
 
     res.status(200).json({
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
       role: newUser.role,
+      token: token,
     });
   } catch (error) {
     res.status(400);

@@ -36,7 +36,7 @@ router
 router
   .route("/profile")
   // get current student's profile
-  .get(authenticate, getCurrentUserProfile)
+  .get(getCurrentUserProfile) // justing checking what happens by deleting the authenticate middleware
   // update current student's profile
   .put(authenticate, updateCurrentUserProfile);
 

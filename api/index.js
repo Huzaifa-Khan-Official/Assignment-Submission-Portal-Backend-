@@ -50,13 +50,13 @@ connectDB()
   .then(() => console.log("Successfully connected to database"))
   .catch((err) => {
     console.error("Error connecting to database", err);
-    process.exit(1);  // Exit the process with an error code
+    process.exit(1); // Exit the process with an error code
   });
 
 // List of allowed origins
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://hackathon-frontend-sandy.vercel.app'
+  "http://localhost:5173",
+  "https://hackathon-frontend-sandy.vercel.app",
 ];
 
 // CORS configuration
@@ -66,10 +66,11 @@ const corsOptions = {
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true,  // Allow credentials such as cookies
+  credentials: true,
+  optionSuccessStatus: 200, // Allow credentials such as cookies
 };
 
 app.use(cors(corsOptions));
@@ -85,7 +86,7 @@ app.use("/api/classes", classRoutes);
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send("Something broke!");
 });
 
 app.listen(port, () => console.log(`Server listening on ${port}`));

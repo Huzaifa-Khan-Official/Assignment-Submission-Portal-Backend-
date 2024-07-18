@@ -232,7 +232,7 @@ const getClassesOfStudent = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const classes = await Class.find({ students: studentId });
+    const classes = await Class.find({ students: studentId }).populate("teacher", "_id username email").select("-students -join_code");
 
     res.status(200).json(classes);
   } catch (error) {

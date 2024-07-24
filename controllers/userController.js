@@ -140,12 +140,20 @@ const getAllTrainers = asyncHandler(async (req, res) => {
 });
 
 const getAllStudents = asyncHandler(async (req, res) => {
-  const trainers = await User.find({ role: "student" });
-  res.status(200).json(trainers);
+  const students = await User.find({ role: "student" })
+    .populate({
+      path: 'classes',
+      select: '_id name teacher',
+      populate: {
+        path: 'teacher',
+        select: "_id username email"
+      }
+    })
+    .select('_id username email');
+  res.status(200).json(students);
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
-  // if (!req.user) return res.status(400).send("User not found");
   if (!req.user) {
     res.status(404);
     throw new Error("User not found");
@@ -377,7 +385,6 @@ const getStudentsByClass = asyncHandler(async (req, res) => {
 
   try {
     const students = await User.find({ class_id: classId, role: "student" });
-    console.log("students ==>", students);
 
     if (students) {
       res.status(200).json(students);

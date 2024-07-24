@@ -245,13 +245,22 @@ const getTrainerById = asyncHandler(async (req, res) => {
 });
 
 const getStudentById = asyncHandler(async (req, res) => {
-  const student = await User.findById(req.params.studentId).select("-password");
+  const student = await User.findById(req.params.studentId)
+    .populate({
+      path: 'classes',
+      select: '_id name teacher',
+      populate: {
+        path: 'teacher',
+        select: "_id username email"
+      }
+    })
+    .select('_id username email role');
 
   if (student && student.role == "student") {
     res.json(student);
   } else {
     res.status(404);
-    throw new Error("User not found");
+    throw new Error("Student not found");
   }
 });
 

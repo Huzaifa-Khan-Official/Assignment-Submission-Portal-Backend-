@@ -19,6 +19,11 @@ const assignmentSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    class_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Class",
+      required: true,
+    },
     total_marks: { type: Number, required: true },
     fileLink: { type: String }, // Assignment file Link
     submissions: [

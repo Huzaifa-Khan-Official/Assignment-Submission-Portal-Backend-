@@ -4,6 +4,7 @@ import User from "../models/userModel.js";
 import Class from "../models/classModel.js";
 import asyncHandler from "../middlewares/asynHandler.js";
 import generateToken from "../utils/createToken.js";
+import Assignment from "../models/assignmentModel.js";
 
 // student CRUD
 const createStudent = asyncHandler(async (req, res) => {
@@ -198,16 +199,27 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
 });
 
 const deleteTrainerById = asyncHandler(async (req, res) => {
-  const trainer = await User.findByIdAndDelete(req.params.trainerId);
+  const trainerId = req.params.trainerId;
+  const trainer = await User.findById(trainerId);
 
   if (trainer) {
     if (trainer.role == "admin") {
       res.status(400);
       throw new Error("Cannot delete an admin!");
     } else {
+      // Delete the trainer
       await User.deleteOne({ _id: trainer._id });
 
-      res.json({ message: "Trainer deleted successfully" });
+      // Delete the classes associated with the trainer
+      const deletedClasses = await Class.deleteMany({ teacher: trainer._id });
+
+      // Remove the trainer's classes from students' class arrays
+      await User.updateMany(
+        { role: "student" },
+        { $pull: { classes: { $in: deletedClasses.map((cls) => cls._id) } } }
+      );
+
+      res.json({ message: "Trainer and associated classes deleted successfully" });
     }
   } else {
     res.status(404);

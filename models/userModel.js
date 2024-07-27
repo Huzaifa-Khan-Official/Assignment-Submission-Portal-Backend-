@@ -21,12 +21,9 @@ const userSchema = new Schema({
         enum: ["student", "trainer", "admin"],
         default: "student"
     },
-    // teacher_id: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User',
-    //     required: function () { return this.role === 'student'; },
-    //     default: null
-    // },
+    image: {
+        type: String
+    },
     classes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Class'

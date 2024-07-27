@@ -8,6 +8,10 @@ const classSchema = new Schema({
         type: String,
         required: true
     },
+    description: {
+        type: String,
+        required: true
+    },
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -17,6 +21,9 @@ const classSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    courseImage: {
+        type: String,
+    },
     join_code: {
         type: String,
         required: true,

@@ -4,7 +4,7 @@ import asyncHandler from "../middlewares/asynHandler.js";
 import { nanoid } from "nanoid";
 
 const createClass = asyncHandler(async (req, res) => {
-  const { name } = req.body;
+  const { name, description, classImage } = req.body;
 
   if (!name) {
     return res.status(400).json({ error: "Please enter a name for the class" });
@@ -15,9 +15,11 @@ const createClass = asyncHandler(async (req, res) => {
   if (!teacher) {
     return res.status(401).json({ error: "Unauthorized" });
   } else {
+    
     const newClass = new Class({
-      name: req.body.name,
+      name,
       teacher: teacher._id,
+      description,
       join_code: nanoid(7),
     });
 

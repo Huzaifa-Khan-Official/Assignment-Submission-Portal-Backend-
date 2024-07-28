@@ -15,7 +15,7 @@ const createClass = asyncHandler(async (req, res) => {
   if (!teacher) {
     return res.status(401).json({ error: "Unauthorized" });
   } else {
-    
+
     const newClass = new Class({
       name,
       teacher: teacher._id,

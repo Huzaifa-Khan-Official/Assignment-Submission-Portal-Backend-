@@ -21,9 +21,15 @@ const classSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    courseImage: {
+    classImage: {
         type: String,
     },
+    assignments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Assignment'
+        }
+    ],
     join_code: {
         type: String,
         required: true,

@@ -20,6 +20,7 @@ const createClass = asyncHandler(async (req, res) => {
       name,
       teacher: teacher._id,
       description,
+      classImage,
       join_code: nanoid(7),
     });
 
@@ -166,7 +167,7 @@ const getAllClassesOfTrainer = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    const classes = await Class.find({ teacher: teacherId });
+    const classes = await Class.find({ teacher: teacherId }).populate("teacher", "username email _id").select("classImage description join_code name");
 
     res.status(200).json(classes);
   } catch (error) {

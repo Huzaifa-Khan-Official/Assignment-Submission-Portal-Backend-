@@ -167,7 +167,7 @@ const getAllClassesOfTrainer = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    const classes = await Class.find({ teacher: teacherId }).populate("teacher", "username email _id").select("classImage description join_code name");
+    const classes = await Class.find({ teacher: teacherId }).populate("teacher", "username email _id profileImg").select("classImage description join_code name");
 
     res.status(200).json(classes);
   } catch (error) {

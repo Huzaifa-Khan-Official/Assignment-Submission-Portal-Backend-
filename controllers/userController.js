@@ -168,6 +168,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      profileImg: user.profileImg
     });
   } else {
     res.status(404);
@@ -181,6 +182,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
+    user.profileImg = req.body.profileImg || user.profileImg;
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(req.body.password, salt);
@@ -191,6 +193,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       username: updatedUser.username,
       email: updatedUser.email,
+      profileImg: updatedUser.profileImg
     });
   } else {
     res.status(404);

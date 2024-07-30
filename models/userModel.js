@@ -21,7 +21,7 @@ const userSchema = new Schema({
         enum: ["student", "trainer", "admin"],
         default: "student"
     },
-    image: {
+    profileImg: {
         type: String
     },
     classes: [{

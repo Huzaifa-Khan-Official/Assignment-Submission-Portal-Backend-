@@ -239,8 +239,23 @@ const getClassesOfStudent = asyncHandler(async (req, res) => {
 
     res.status(200).json(classes);
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: "Server error" });
+  }
+});
+
+const getClassDetailById = asyncHandler(async (req, res) => {
+  const classId = req.params.classId;
+
+  try {
+    const classObj = await Class.findById(classId).populate("teacher", "_id username email profileImg").select("classImage description join_code name");
+
+    if (!classObj) {
+      return res.status(404).send("Class not found");
+    }
+
+    res.status(200).json(classObj);
+  } catch (error) {
+    return res.status(500).send("Couldn't find the class detail! Please try later.");
   }
 });
 
@@ -254,4 +269,5 @@ export {
   getAllStudentsOfClass,
   getClassmates,
   getClassesOfStudent,
+  getClassDetailById
 };

@@ -14,6 +14,7 @@ import {
   getAllStudentsOfClass,
   getClassmates,
   getClassesOfStudent,
+  getClassDetailById
 } from "../controllers/classController.js";
 
 const router = express.Router();
@@ -25,6 +26,10 @@ router.route("/getClasses").get(authenticate, getClassesOfStudent);
 router
   .route("/students/:classId")
   .get(authenticate, authorizeTrainer, getAllStudentsOfClass);
+
+router
+  .route("/student/class/:classId")
+  .get(authenticate, getClassDetailById);
 
 router
   .route("/admin/students/:classId")

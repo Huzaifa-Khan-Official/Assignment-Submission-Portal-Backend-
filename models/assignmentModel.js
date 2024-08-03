@@ -29,6 +29,7 @@ const assignmentSchema = new mongoose.Schema(
     submissions: [
       {
         student: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        description: { type: String },
         fileLink: { type: String }, // link of file submitted according to that assignment
         submissionDate: { type: Date },
         marks: { type: Number },

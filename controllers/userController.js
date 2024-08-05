@@ -184,6 +184,17 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     user.email = req.body.email || user.email;
     user.profileImg = req.body.profileImg || user.profileImg;
     if (req.body.password) {
+      if (!req.body.oldPassword) {
+        res.status(400);
+        throw new Error("Old password is required");
+      }
+
+      const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+      if (!isMatch) {
+        res.status(400);
+        throw new Error("Old password does not match");
+      }
+
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(req.body.password, salt);
     }

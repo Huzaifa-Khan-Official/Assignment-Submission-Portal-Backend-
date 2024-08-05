@@ -200,25 +200,18 @@ const getClassmates = asyncHandler(async (req, res) => {
   const studentId = req.user._id;
 
   try {
-    const classObj = await Class.findById(classId);
+    const classObj = await Class.findById(classId).populate("teacher students", "username email profileImg").select("classImage description name ");
+    const userDetail = await User.findById(studentId);
 
     if (!classObj) {
       return res.status(404).json({ error: "Class not found" });
     }
 
-    const student = await User.findById(studentId);
-
-    if (!student || !classObj.students.includes(studentId)) {
-      return res.status(404).json({ error: "Student not found in the class" });
+    if (!userDetail.classes.includes(classId)) {
+      return res.status(403).json({ error: "Student not enrolled in the class" });
     }
 
-    const classmates = await User.find({
-      _id: { $in: classObj.students },
-      _id: { $ne: studentId },
-      role: "student",
-    });
-
-    res.status(200).json(classmates);
+    res.status(200).json(classObj);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Server error" });

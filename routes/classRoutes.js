@@ -29,6 +29,10 @@ router
   .get(authenticate, authorizeTrainer, getAllStudentsOfClass);
 
 router
+  .route("/trainer/class/:classId")
+  .get(authenticate, authorizeTrainer, getClassDetailById);
+
+router
   .route("/student/class/:classId")
   .get(authenticate, getClassDetailById)
   .delete(authenticate, unEnrollStudentByClassId);

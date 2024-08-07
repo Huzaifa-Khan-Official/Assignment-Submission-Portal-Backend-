@@ -14,7 +14,8 @@ import {
   getAllStudentsOfClass,
   getClassmates,
   getClassesOfStudent,
-  getClassDetailById
+  getClassDetailById,
+  unEnrollStudentByClassId
 } from "../controllers/classController.js";
 
 const router = express.Router();
@@ -28,8 +29,13 @@ router
   .get(authenticate, authorizeTrainer, getAllStudentsOfClass);
 
 router
+  .route("/trainer/class/:classId")
+  .get(authenticate, authorizeTrainer, getClassDetailById);
+
+router
   .route("/student/class/:classId")
-  .get(authenticate, getClassDetailById);
+  .get(authenticate, getClassDetailById)
+  .delete(authenticate, unEnrollStudentByClassId);
 
 router
   .route("/admin/students/:classId")

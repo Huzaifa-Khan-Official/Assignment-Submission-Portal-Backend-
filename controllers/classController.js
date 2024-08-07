@@ -262,6 +262,34 @@ const getClassDetailById = asyncHandler(async (req, res) => {
   }
 });
 
+const unEnrollStudentByClassId = asyncHandler(async (req, res) => {
+  const classId = req.params.classId;
+
+  try {
+    const classObj = await Class.findById(classId);
+    const student = await User.findById(req.user._id);
+
+    if (!classObj || !student) {
+      return res.status(404).send("Class or student not found");
+    }
+
+    if (!classObj.students.includes(student._id)) {
+      return res.status(400).send("Student is not enrolled in the class");
+    }
+
+    classObj.students.pull(student._id);
+    await classObj.save();
+
+    student.classes.pull(classObj._id);
+    await student.save();
+
+    res.status(200).json({ message: "Student unenrolled successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Server error");
+  }
+});
+
 export {
   createClass,
   updateClassById,
@@ -273,4 +301,5 @@ export {
   getClassmates,
   getClassesOfStudent,
   getClassDetailById,
+  unEnrollStudentByClassId,
 };

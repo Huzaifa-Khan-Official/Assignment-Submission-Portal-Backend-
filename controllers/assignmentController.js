@@ -45,6 +45,7 @@ const createAssignment = asyncHandler(async (req, res) => {
     fileLink,
     trainer_id: trainerId,
     course_id: classDoc._id,
+    class_id: classId,
   });
 
   try {
@@ -58,7 +59,6 @@ const createAssignment = asyncHandler(async (req, res) => {
 // ---- Get an assignment by its ID --------------- //
 const getAssignmentById = asyncHandler(async (req, res) => {
   const assignmentId = req.params.id;
-
   try {
     // Find the assignment by ID
     const assignment = await Assignment.findById(assignmentId)
@@ -68,14 +68,12 @@ const getAssignmentById = asyncHandler(async (req, res) => {
     if (!assignment) {
       return res.status(404).json({ error: "Assignment not found" });
     }
-
     // Check if the authenticated user is the trainer who created the assignment
     if (assignment.trainer_id._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         error: "Access denied: You are not the author of this assignment",
       });
     }
-
     res.status(200).json(assignment);
   } catch (error) {
     res.status(500).json({ error: "Server Error" });
@@ -135,7 +133,7 @@ const deleteAssignment = asyncHandler(async (req, res) => {
   }
 
   try {
-    await Assignment.findByIdAndRemove(assignmentId);
+    await Assignment.findOneAndDelete(assignmentId);
     res.status(200).json({ msg: "Assignment removed" });
   } catch (error) {
     res.status(400);

@@ -8,7 +8,7 @@ const assignmentSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     dueDate: { type: Date, required: true },
-    postDate: { type: Date, default: Date.now() }, // Date.now
+    postDate: { type: Date, default: Date.now }, // Date.now
     trainer_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

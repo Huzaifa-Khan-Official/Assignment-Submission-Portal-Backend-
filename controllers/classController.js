@@ -15,7 +15,6 @@ const createClass = asyncHandler(async (req, res) => {
   if (!teacher) {
     return res.status(401).json({ error: "Unauthorized" });
   } else {
-
     const newClass = new Class({
       name,
       teacher: teacher._id,
@@ -167,7 +166,9 @@ const getAllClassesOfTrainer = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Teacher not found" });
     }
 
-    const classes = await Class.find({ teacher: teacherId }).populate("teacher", "username email _id profileImg").select("classImage description join_code name");
+    const classes = await Class.find({ teacher: teacherId })
+      .populate("teacher", "username email _id profileImg")
+      .select("classImage description join_code name");
 
     res.status(200).json(classes);
   } catch (error) {
@@ -200,7 +201,9 @@ const getClassmates = asyncHandler(async (req, res) => {
   const studentId = req.user._id;
 
   try {
-    const classObj = await Class.findById(classId).populate("teacher students", "username email profileImg").select("classImage description name ");
+    const classObj = await Class.findById(classId)
+      .populate("teacher students", "username email profileImg")
+      .select("classImage description name ");
     const userDetail = await User.findById(studentId);
 
     if (!classObj) {
@@ -208,7 +211,9 @@ const getClassmates = asyncHandler(async (req, res) => {
     }
 
     if (!userDetail.classes.includes(classId)) {
-      return res.status(403).json({ error: "Student not enrolled in the class" });
+      return res
+        .status(403)
+        .json({ error: "Student not enrolled in the class" });
     }
 
     res.status(200).json(classObj);
@@ -228,7 +233,9 @@ const getClassesOfStudent = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    const classes = await Class.find({ students: studentId }).populate("teacher", "_id username email profileImg").select("-students -join_code");
+    const classes = await Class.find({ students: studentId })
+      .populate("teacher", "_id username email profileImg")
+      .select("-students -join_code");
 
     res.status(200).json(classes);
   } catch (error) {
@@ -238,9 +245,10 @@ const getClassesOfStudent = asyncHandler(async (req, res) => {
 
 const getClassDetailById = asyncHandler(async (req, res) => {
   const classId = req.params.classId;
-
   try {
-    const classObj = await Class.findById(classId).populate("teacher", "_id username email profileImg").select("classImage description join_code name");
+    const classObj = await Class.findById(classId)
+      .populate("teacher", "_id username email profileImg")
+      .select("classImage description join_code name");
 
     if (!classObj) {
       return res.status(404).send("Class not found");
@@ -248,7 +256,9 @@ const getClassDetailById = asyncHandler(async (req, res) => {
 
     res.status(200).json(classObj);
   } catch (error) {
-    return res.status(500).send("Couldn't find the class detail! Please try later.");
+    return res
+      .status(500)
+      .send("Couldn't find the class detail! Please try later.");
   }
 });
 
@@ -262,5 +272,5 @@ export {
   getAllStudentsOfClass,
   getClassmates,
   getClassesOfStudent,
-  getClassDetailById
+  getClassDetailById,
 };

@@ -143,14 +143,14 @@ const getAllTrainers = asyncHandler(async (req, res) => {
 const getAllStudents = asyncHandler(async (req, res) => {
   const students = await User.find({ role: "student" })
     .populate({
-      path: 'classes',
-      select: '_id name teacher',
+      path: "classes",
+      select: "_id name teacher",
       populate: {
-        path: 'teacher',
-        select: "_id username email"
-      }
+        path: "teacher",
+        select: "_id username email",
+      },
     })
-    .select('_id username email');
+    .select("_id username email");
   res.status(200).json(students);
 });
 
@@ -168,7 +168,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       username: user.username,
       email: user.email,
       role: user.role,
-      profileImg: user.profileImg
+      profileImg: user.profileImg,
     });
   } else {
     res.status(404);
@@ -204,7 +204,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       username: updatedUser.username,
       email: updatedUser.email,
-      profileImg: updatedUser.profileImg
+      profileImg: updatedUser.profileImg,
     });
   } else {
     res.status(404);
@@ -248,7 +248,9 @@ const deleteTrainerById = asyncHandler(async (req, res) => {
       //   { $pull: { classes: { $in: deletedClasses.map((cls) => cls._id) } } }
       // );
 
-      res.json({ message: "Trainer and associated classes deleted successfully" });
+      res.json({
+        message: "Trainer and associated classes deleted successfully",
+      });
     }
   } else {
     res.status(404);
@@ -288,14 +290,14 @@ const getTrainerById = asyncHandler(async (req, res) => {
 const getStudentById = asyncHandler(async (req, res) => {
   const student = await User.findById(req.params.studentId)
     .populate({
-      path: 'classes',
-      select: '_id name teacher',
+      path: "classes",
+      select: "_id name teacher",
       populate: {
-        path: 'teacher',
-        select: "_id username email"
-      }
+        path: "teacher",
+        select: "_id username email",
+      },
     })
-    .select('_id username email role');
+    .select("_id username email role");
 
   if (student && student.role == "student") {
     res.json(student);

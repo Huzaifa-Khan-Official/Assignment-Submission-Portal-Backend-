@@ -63,8 +63,7 @@ const getAssignmentById = asyncHandler(async (req, res) => {
     // Find the assignment by ID
     const assignment = await Assignment.findById(assignmentId)
       .populate("trainer_id", "name email")
-      .populate("course_id", "name");
-
+      .populate("class_id", "name");
     if (!assignment) {
       return res.status(404).json({ error: "Assignment not found" });
     }
@@ -230,7 +229,6 @@ const evaluateSubmission = asyncHandler(async (req, res) => {
 const getStudentSubmissionReport = asyncHandler(async (req, res) => {
   const { assignmentId, studentId } = req.params;
   const currentUser = req.user;
-
   try {
     const assignment = await Assignment.findById(assignmentId);
 
@@ -264,17 +262,20 @@ const getStudentSubmissionReport = asyncHandler(async (req, res) => {
       (sub) => sub.student.toString() === studentId
     );
 
-    if (!submission) {
-      return res.status(404).json({ error: "Submission not found" });
-    }
-
+    // if (!submission) {
+    //   return res.status(404).json({ error: "Submission not found" });
+    // }
     res.status(200).json({
       assignmentTitle: assignment.title,
       totalMarks: assignment.total_marks,
-      submissionDate: submission.submissionDate,
-      marks: submission.marks,
-      rating: submission.rating,
-      remark: submission.remark,
+      submissionDate: submission?.submissionDate,
+      marks: submission?.marks,
+      rating: submission?.rating,
+      remark: submission?.remark,
+      description: assignment.description,
+      assignmentFile: assignment.fileLink,
+      dueDate: assignment.dueDate,
+      submittedFileLink: submission?.fileLink,
     });
   } catch (error) {
     res.status(500).json({ error: "Server Error" });

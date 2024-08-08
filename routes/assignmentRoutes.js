@@ -22,6 +22,7 @@ import {
   authenticate,
   authorizeTrainer,
   authorizeAdmin,
+  authorizeTrainerORAdmin,
 } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -54,7 +55,7 @@ router.get(
 );
 router.get(
   "/class/:classId/student/:studentId/reports",
-  authorizeAdmin,
+  authorizeTrainerORAdmin,
   getStudentAssignmentReportsForClass
 );
 router.get(

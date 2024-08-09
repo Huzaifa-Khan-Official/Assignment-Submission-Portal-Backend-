@@ -23,6 +23,7 @@ import {
   authenticate,
   authorizeAdmin,
   authorizeTrainer,
+  authorizeTrainerORAdmin,
 } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -62,7 +63,7 @@ router
 
 router
   .route("/student/:studentId")
-  .get(authenticate, authorizeAdmin, getStudentById)
+  .get(authenticate, authorizeTrainerORAdmin, getStudentById)
   .delete(authenticate, authorizeAdmin, deleteStudentById)
   .put(authenticate, authorizeAdmin, updateStudentById);
 

@@ -348,7 +348,14 @@ const getStudentAssignmentReportsForClass = asyncHandler(async (req, res) => {
     if (!classDoc) {
       return res.status(404).json({ error: "Class not found" });
     }
-
+    if (
+      currentUser.role === "student" &&
+      currentUser._id.toString() !== studentId
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Access denied. You can only view your own reports." });
+    }
     // Check authorization
     if (
       currentUser.role === "trainer" &&

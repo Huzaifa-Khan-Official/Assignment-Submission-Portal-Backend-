@@ -46,17 +46,16 @@ router.get(
 
 // Route accessible by students, trainers, and admins
 router.get("/:assignmentId/report/:studentId", getStudentSubmissionReport);
+router.get(
+  "/class/:classId/student/:studentId/reports",
+  getStudentAssignmentReportsForClass
+);
 
 // ADMIN ROUTES
 router.get(
   "/trainer/:trainerId/assignments",
   authorizeAdmin,
   getAssignmentsByTrainerId
-);
-router.get(
-  "/class/:classId/student/:studentId/reports",
-  authorizeTrainerORAdmin,
-  getStudentAssignmentReportsForClass
 );
 router.get(
   "/class/:classId/assignment/:assignmentId/student/:studentId",

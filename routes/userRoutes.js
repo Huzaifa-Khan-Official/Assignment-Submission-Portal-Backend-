@@ -63,7 +63,7 @@ router
 
 router
   .route("/student/:studentId")
-  .get(authenticate, authorizeTrainerORAdmin, getStudentById)
+  .get(authenticate, getStudentById)
   .delete(authenticate, authorizeAdmin, deleteStudentById)
   .put(authenticate, authorizeAdmin, updateStudentById);
 

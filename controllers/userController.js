@@ -297,7 +297,7 @@ const getStudentById = asyncHandler(async (req, res) => {
         select: "_id username email",
       },
     })
-    .select("_id username email role");
+    .select("_id username email role profileImg");
 
   if (student && student.role == "student") {
     res.json(student);

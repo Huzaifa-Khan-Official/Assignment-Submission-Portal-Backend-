@@ -221,32 +221,19 @@ const deleteTrainerById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Cannot delete an admin!");
     } else {
-      // Find classes associated with the trainer
       const classes = await Class.find({ teacher: trainer._id });
       const classIds = classes.map((cls) => cls._id);
 
-      // Delete the trainer
       await User.deleteOne({ _id: trainer._id });
 
-      // Delete the classes associated with the trainer
       await Class.deleteMany({ _id: { $in: classIds } });
 
-      // Remove the trainer's classes from students' class arrays
       await User.updateMany(
         { role: "student" },
         { $pull: { classes: { $in: classIds } } }
       );
-      // // Delete the trainer
-      // await User.deleteOne({ _id: trainer._id });
 
-      // // Delete the classes associated with the trainer
-      // const deletedClasses = await Class.deleteMany({ teacher: trainer._id });
-
-      // // Remove the trainer's classes from students' class arrays
-      // await User.updateMany(
-      //   { role: "student" },
-      //   { $pull: { classes: { $in: deletedClasses.map((cls) => cls._id) } } }
-      // );
+      await Assignment.deleteMany({ trainer_id: trainerId });
 
       res.json({
         message: "Trainer and associated classes deleted successfully",

@@ -34,7 +34,7 @@ const createClass = asyncHandler(async (req, res) => {
 const updateClassById = asyncHandler(async (req, res) => {
   const classId = req.params.classId;
   const teacherId = req.user._id;
-  const name = req.body.name;
+  const { name, description, classImage } = req.body;
 
   try {
     const classObj = await Class.findById(classId);
@@ -52,6 +52,8 @@ const updateClassById = asyncHandler(async (req, res) => {
     }
 
     classObj.name = name || classObj.name;
+    classObj.description = description || classObj.description;
+    classObj.classImage = classImage || classObj.classImage;
 
     await classObj.save();
 

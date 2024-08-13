@@ -264,13 +264,17 @@ const deleteStudentById = asyncHandler(async (req, res) => {
 });
 
 const getTrainerById = asyncHandler(async (req, res) => {
-  const trainer = await User.findById(req.params.trainerId).select("-password");
+  try {
+    const trainer = await User.findById(req.params.trainerId).populate("classes").select("email username role");
 
-  if (trainer) {
-    res.json(trainer);
-  } else {
-    res.status(404);
-    throw new Error("User not found");
+    if (!trainer) {
+      return res.status(404).json({ message: "No trainer found!" });
+    } else {
+      res.json(trainer);
+    }
+
+  } catch (error) {
+    throw new Error("Something went wrong!");
   }
 });
 

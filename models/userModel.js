@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateOtp } from "../utils/generateOTP";
 
 const { Schema, model } = mongoose;
 
@@ -21,6 +22,13 @@ const userSchema = new Schema({
         enum: ["student", "trainer", "admin"],
         default: "student"
     },
+    otp: {
+        type: String
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     profileImg: {
         type: String
     },
@@ -29,6 +37,20 @@ const userSchema = new Schema({
         ref: 'Class'
     }],
 }, { timestamps: true });
+
+// userSchema.pre("save", function (next) {
+//     if (!this.otp) {
+//         this.otp = generateOtp()
+
+//         sendEmail({
+//             to: this.email,
+//             subject: "Account Verification OTP",
+//             text: `Your account verification token is ${this.otp}`
+//         }).then(res => console.log(`Successfully sending emial to ${this.email}`))
+//             .catch(err => console.log(`Error sending emial to ${this.email}`))
+//     }
+//     next();
+// })
 
 const User = model("User", userSchema);
 

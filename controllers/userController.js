@@ -160,15 +160,11 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 
-  const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id).select("_id username email role isVerified profileImg ");
 
   if (user) {
     res.status(200).json({
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      profileImg: user.profileImg,
+      ...user._doc
     });
   } else {
     res.status(404);

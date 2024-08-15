@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer"
+import serverConfig from "../config/serverConfig.js";
 
 const transporter = nodemailer.createTransport({
     service: "Gmail",

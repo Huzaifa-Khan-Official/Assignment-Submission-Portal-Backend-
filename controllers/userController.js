@@ -105,6 +105,15 @@ const loginUser = asyncHandler(async (req, res) => {
   const userExits = await User.findOne({ email });
 
   if (userExits) {
+    if (!userExits.isVerified) {
+      const token = generateToken(res, userExits._id);
+
+      return res.status(400).json({
+        message: "Please verify your email first!",
+        token: token,
+      })
+    };
+
     const isMatch = await bcrypt.compare(password, userExits.password);
 
     if (isMatch) {
@@ -122,7 +131,7 @@ const loginUser = asyncHandler(async (req, res) => {
       res.status(400).send("Invalid credentials");
     }
   } else {
-    res.status(400).send("Invalid credentials");
+    res.status(400).send("User not found!");
   }
 });
 
@@ -437,6 +446,26 @@ const getStudentsByClass = asyncHandler(async (req, res) => {
   }
 });
 
+const verifyAccount = asyncHandler(async (req, res) => {
+  const { otp } = req.body;
+  const user = req.user;
+
+  if (user.isVerified) {
+    res.status(400).send("Account already verified");
+    return;
+  }
+
+  if (user.otp !== otp) {
+    res.status(400).send("Invalid OTP");
+    return;
+  }
+
+  user.isVerified = true;
+  await user.save();
+
+  res.status(200).json({ message: "Account verified successfully" });
+});
+
 export {
   loginUser,
   logoutUser,
@@ -456,4 +485,5 @@ export {
   getStudentsOfTrainer,
   getStudentByTrainer,
   getStudentsByClass,
+  verifyAccount,
 };

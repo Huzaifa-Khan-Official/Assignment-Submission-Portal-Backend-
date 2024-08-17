@@ -18,6 +18,7 @@ import {
   getStudentsOfTrainer,
   getStudentByTrainer,
   getStudentsByClass,
+  verifyAccount,
 } from "../controllers/userController.js";
 import {
   authenticate,
@@ -33,6 +34,10 @@ router
   .route("/")
   // create a new student
   .post(createStudent);
+
+router
+  .route("/account-verification")
+  .post(authenticate, verifyAccount);
 
 router
   .route("/profile")

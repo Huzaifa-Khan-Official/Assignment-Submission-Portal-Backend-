@@ -463,7 +463,7 @@ const verifyAccount = asyncHandler(async (req, res) => {
   user.isVerified = true;
   await user.save();
 
-  res.status(200).json({ message: "Account verified successfully" });
+  res.status(200).json({ message: "Account verified successfully", role: user.role });
 });
 
 export {

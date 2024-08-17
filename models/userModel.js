@@ -43,12 +43,15 @@ userSchema.pre("save", function (next) {
     if (!this.otp) {
         this.otp = generateOtp()
 
-        sendEmail({
-            to: this.email,
-            subject: "Account Verification OTP",
-            text: `Your account verification token is ${this.otp}`
-        }).then(res => console.log(`Successfully sending emial to ${this.email}`))
-            .catch(err => console.log(`Error sending emial to ${this.email}`))
+        try {
+            const res = sendEmail({
+                to: this.email,
+                subject: "Account Verification OTP",
+                text: `Your account verification token is ${this.otp}`
+            })
+        } catch (error) {
+            console.log(`Error sending emial to ${this.email}`)
+        }
     }
     next();
 })

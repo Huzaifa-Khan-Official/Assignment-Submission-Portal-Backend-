@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 import serverConfig from "../config/serverConfig.js";
 
 const transporter = nodemailer.createTransport({
@@ -10,19 +10,19 @@ const transporter = nodemailer.createTransport({
         user: serverConfig.gmail_user_mail,
         pass: serverConfig.gmail_app_password
     }
-})
+});
 
 const sendEmail = async (data) => {
     try {
         const response = await transporter.sendMail({
             from: serverConfig.gmail_user_mail,
             ...data
-        })
+        });
 
         return response;
     } catch (error) {
-        throw error
+        throw error;
     }
-}
+};
 
-export { sendEmail }
+export { sendEmail };

@@ -159,7 +159,7 @@ const getAllStudents = asyncHandler(async (req, res) => {
         select: "_id username email",
       },
     })
-    .select("_id username email");
+    .select("_id username email isVerified");
   res.status(200).json(students);
 });
 

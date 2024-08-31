@@ -19,12 +19,12 @@ import {
   getStudentByTrainer,
   getStudentsByClass,
   verifyAccount,
+  getUnenrolledStudents
 } from "../controllers/userController.js";
 import {
   authenticate,
   authorizeAdmin,
   authorizeTrainer,
-  authorizeTrainerORAdmin,
 } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -42,7 +42,7 @@ router
 router
   .route("/profile")
   // get current student's profile
-  .get(authenticate, getCurrentUserProfile) // justing checking what happens by deleting the authenticate middleware
+  .get(authenticate, getCurrentUserProfile)
   // update current student's profile
   .put(authenticate, updateCurrentUserProfile);
 
@@ -61,6 +61,10 @@ router
 router
   .route("/student")
   .post(authenticate, authorizeAdmin, createStudentByAdmin);
+
+router
+  .route("/students/unenrolled")
+  .get(authenticate, authorizeAdmin, getUnenrolledStudents);
 
 router
   .route("/students/class/:classId")

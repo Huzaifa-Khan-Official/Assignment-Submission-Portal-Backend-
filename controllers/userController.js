@@ -466,6 +466,23 @@ const verifyAccount = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Account verified successfully", role: user.role });
 });
 
+const getUnenrolledStudents = asyncHandler(async (req, res) => {
+  try {
+    const unenrolledStudents = await User.find({
+      role: "student",
+      classes: { $size: 0 }
+    }).select("_id username email");
+
+    if (unenrolledStudents.length > 0) {
+      res.status(200).json(unenrolledStudents);
+    } else {
+      res.status(404).json({ message: "No unenrolled students found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 export {
   loginUser,
   logoutUser,
@@ -486,4 +503,5 @@ export {
   getStudentByTrainer,
   getStudentsByClass,
   verifyAccount,
+  getUnenrolledStudents
 };

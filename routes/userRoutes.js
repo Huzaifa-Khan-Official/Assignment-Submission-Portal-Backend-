@@ -19,7 +19,8 @@ import {
   getStudentByTrainer,
   getStudentsByClass,
   verifyAccount,
-  getUnenrolledStudents
+  getUnenrolledStudents,
+  setMultipleStudents,
 } from "../controllers/userController.js";
 import {
   authenticate,
@@ -48,7 +49,10 @@ router
 
 router.route("/trainers").get(authenticate, authorizeAdmin, getAllTrainers);
 
-router.route("/students").get(authenticate, authorizeAdmin, getAllStudents);
+router
+  .route("/students")
+  .get(authenticate, authorizeAdmin, getAllStudents)
+  .post(authenticate, authorizeAdmin, setMultipleStudents);
 
 router.route("/trainer").post(authenticate, authorizeAdmin, createTeacher);
 

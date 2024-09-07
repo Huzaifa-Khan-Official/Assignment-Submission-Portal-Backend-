@@ -608,6 +608,47 @@ const getAllSubmittedAssignments = asyncHandler(async (req, res) => {
   }
 });
 
+// ------Controller for unsubmitting a specific assignment -------- //
+
+const unsubmitAssignment = asyncHandler(async (req, res) => {
+  const studentId = req.user._id;
+  const { assignmentId } = req.params;
+
+  try {
+    // Check if the assignment exists
+    const assignment = await Assignment.findById(assignmentId);
+
+    if (!assignment) {
+      return res.status(404).json({ error: "Assignment not found" });
+    }
+
+    // Check if the student has already submitted the assignment
+    const existingSubmission = assignment.submissions.find(
+      (submission) => submission.student.toString() === studentId.toString()
+    );
+
+    if (!existingSubmission) {
+      return res
+        .status(400)
+        .json({ error: "You have not submitted this assignment" });
+    }
+
+    // Remove the student's submission
+    const index = assignment.submissions.indexOf(existingSubmission);
+    assignment.submissions.splice(index, 1);
+
+    // Save
+
+    await assignment.save();
+
+    res.status(200).json({ message: "Assignment unsubmitted successfully" });
+  } catch (error) {
+
+    res.status(500).json({ error: "Server Error" });
+  }
+
+});
+
 export {
   // trainer
   createAssignment,
@@ -630,5 +671,6 @@ export {
   getAssignmentsForClass,
   getAssignmentsToSubmit,
   submitAssignment,
+  unsubmitAssignment,
   // getAllSubmittedAssignments,
 };
